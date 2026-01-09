@@ -23,29 +23,27 @@ test.describe('Smoke Tests - Flujo de Búsqueda', () => {
         const searchButton = page.getByRole('button', { name: 'Buscar' });
         await searchButton.click();
 
-        // 4. Esperar a que AMBAS llamadas API se completen
-        try {
-            // Esperar geocoding
-            await page.waitForResponse(
-                response => response.url().includes('geocoding-api.open-meteo.com') && response.status() === 200,
-                { timeout: 15000 }
-            );
+        // 4. Esperar a que aparezcan los resultados
+        // Esto implica que las APIs respondieron correctamente
+        const weatherCard = page.getByTestId('weather-card');
 
-            // Esperar forecast
-            await page.waitForResponse(
-                response => response.url().includes('api.open-meteo.com/v1/forecast') && response.status() === 200,
-                { timeout: 15000 }
-            );
+        try {
+            // Timeout generoso para CI/CD (las APIs pueden tardar)
+            await expect(weatherCard).toBeVisible({ timeout: 30000 });
         } catch (error) {
-            console.error('API timeout or error:', error);
-            // Capturar screenshot para debugging
-            await page.screenshot({ path: 'api-timeout-debug.png' });
+            // Si falla, capturar información para debugging
+            console.error('❌ Weather card no apareció después de 30s');
+
+            // Verificar si hay mensaje de error en la UI
+            const errorMessage = await page.locator('.error-message').textContent().catch(() => null);
+            if (errorMessage) {
+                console.error('Error en UI:', errorMessage);
+            }
+
+            // Capturar screenshot
+            await page.screenshot({ path: 'test-results/smoke-test-timeout.png' });
             throw error;
         }
-
-        // 5. Verificar que aparecen los resultados
-        const weatherCard = page.getByTestId('weather-card');
-        await expect(weatherCard).toBeVisible({ timeout: 10000 });
 
         // 6. Verificar que el mapa está presente
         const mapView = page.getByTestId('map-view');
