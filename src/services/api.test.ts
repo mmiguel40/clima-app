@@ -41,6 +41,13 @@ describe('Servicio de API', () => {
             const result = await getCoordinates('Nowhere');
             expect(result).toBeNull();
         });
+
+        it('retorna null cuando fetch falla', async () => {
+            globalThis.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
+
+            const result = await getCoordinates('Test');
+            expect(result).toBeNull();
+        });
     });
 
     describe('getWeather', () => {
@@ -63,6 +70,22 @@ describe('Servicio de API', () => {
                 windSpeed: 10,
                 weatherCode: 1,
             });
+        });
+
+        it('retorna null cuando no hay current_weather', async () => {
+            globalThis.fetch = vi.fn().mockResolvedValue({
+                json: vi.fn().mockResolvedValue({}),
+            });
+
+            const result = await getWeather(10, 20);
+            expect(result).toBeNull();
+        });
+
+        it('retorna null cuando fetch falla', async () => {
+            globalThis.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
+
+            const result = await getWeather(10, 20);
+            expect(result).toBeNull();
         });
     });
 });
