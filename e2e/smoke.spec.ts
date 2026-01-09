@@ -23,13 +23,29 @@ test.describe('Smoke Tests - Flujo de Búsqueda', () => {
         const searchButton = page.getByRole('button', { name: 'Buscar' });
         await searchButton.click();
 
-        // 4. Esperar a que la búsqueda se complete
-        // Dar más tiempo y verificar que no haya errores
-        await page.waitForTimeout(2000);
+        // 4. Esperar a que AMBAS llamadas API se completen
+        try {
+            // Esperar geocoding
+            await page.waitForResponse(
+                response => response.url().includes('geocoding-api.open-meteo.com') && response.status() === 200,
+                { timeout: 15000 }
+            );
+
+            // Esperar forecast
+            await page.waitForResponse(
+                response => response.url().includes('api.open-meteo.com/v1/forecast') && response.status() === 200,
+                { timeout: 15000 }
+            );
+        } catch (error) {
+            console.error('API timeout or error:', error);
+            // Capturar screenshot para debugging
+            await page.screenshot({ path: 'api-timeout-debug.png' });
+            throw error;
+        }
 
         // 5. Verificar que aparecen los resultados
         const weatherCard = page.getByTestId('weather-card');
-        await expect(weatherCard).toBeVisible({ timeout: 30000 });
+        await expect(weatherCard).toBeVisible({ timeout: 10000 });
 
         // 6. Verificar que el mapa está presente
         const mapView = page.getByTestId('map-view');
