@@ -57,85 +57,85 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-    # JOB 3: DEPLOY DEV
-    deploy-dev:
-      name: Deploy to DEV
-      needs: quality-check
-      if: github.ref == 'refs/heads/develop'
-      runs-on: ubuntu-latest
-      environment:
-        name: development
-        url: https://mmiguel40.github.io/clima-app/dev/
-      steps:
-        - uses: actions/checkout@v4
-        - uses: actions/setup-node@v4
-          with:
-            node-version: 18
-        - run: npm ci
-        - name: Build DEV
-          run: |
-            export VITE_ENV_LABEL="DEV ENVIRONMENT"
-            npm run build -- --base=/clima-app/dev/
-          env:
-            VITE_ENV_LABEL: "DEV ENVIRONMENT"
-        - name: Deploy DEV
-          uses: peaceiris/actions-gh-pages@v3
-          with:
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            publish_dir: ./dist
-            destination_dir: dev
-            keep_files: true
+  # JOB 3: DEPLOY DEV
+  deploy-dev:
+    name: Deploy to DEV
+    needs: quality-check
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    environment:
+      name: development
+      url: https://mmiguel40.github.io/clima-app/dev/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - run: npm ci
+      - name: Build DEV
+        run: |
+          export VITE_ENV_LABEL="DEV ENVIRONMENT"
+          npm run build -- --base=/clima-app/dev/
+        env:
+          VITE_ENV_LABEL: "DEV ENVIRONMENT"
+      - name: Deploy DEV
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          destination_dir: dev
+          keep_files: true
 
-    # JOB 4: DEPLOY QA
-    deploy-qa:
-      name: Deploy to QA
-      needs: quality-check
-      if: startsWith(github.ref, 'refs/heads/release/')
-      runs-on: ubuntu-latest
-      environment:
-        name: qa
-        url: https://mmiguel40.github.io/clima-app/qa/
-      steps:
-        - uses: actions/checkout@v4
-        - uses: actions/setup-node@v4
-          with:
-            node-version: 18
-        - run: npm ci
-        - name: Build QA
-          run: npm run build -- --base=/clima-app/qa/
-          env:
-            VITE_ENV_LABEL: "QA TESTING"
-        - name: Deploy QA
-          uses: peaceiris/actions-gh-pages@v3
-          with:
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            publish_dir: ./dist
-            destination_dir: qa
-            keep_files: true
+  # JOB 4: DEPLOY QA
+  deploy-qa:
+    name: Deploy to QA
+    needs: quality-check
+    if: startsWith(github.ref, 'refs/heads/release/')
+    runs-on: ubuntu-latest
+    environment:
+      name: qa
+      url: https://mmiguel40.github.io/clima-app/qa/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - run: npm ci
+      - name: Build QA
+        run: npm run build -- --base=/clima-app/qa/
+        env:
+          VITE_ENV_LABEL: "QA TESTING"
+      - name: Deploy QA
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          destination_dir: qa
+          keep_files: true
 
-    # JOB 5: DEPLOY PROD
-    deploy-prod:
-      name: Deploy to PROD
-      needs: quality-check
-      if: github.ref == 'refs/heads/main'
-      runs-on: ubuntu-latest
-      environment:
-        name: production
-        url: https://mmiguel40.github.io/clima-app/
-      steps:
-        - uses: actions/checkout@v4
-        - uses: actions/setup-node@v4
-          with:
-            node-version: 18
-        - run: npm ci
-        - name: Build PROD
-          run: npm run build -- --base=/clima-app/
-          env:
-            VITE_ENV_LABEL: ""
-        - name: Deploy PROD
-          uses: peaceiris/actions-gh-pages@v3
-          with:
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            publish_dir: ./dist
-            destination_dir: ./
-            keep_files: true
+  # JOB 5: DEPLOY PROD
+  deploy-prod:
+    name: Deploy to PROD
+    needs: quality-check
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://mmiguel40.github.io/clima-app/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - run: npm ci
+      - name: Build PROD
+        run: npm run build -- --base=/clima-app/
+        env:
+          VITE_ENV_LABEL: ""
+      - name: Deploy PROD
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          destination_dir: ./
+          keep_files: true
