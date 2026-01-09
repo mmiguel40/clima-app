@@ -10,66 +10,76 @@ Es como una **línea de producción automática** que verifica que tu código fu
 
 ## 📋 Etapas del Pipeline
 
-### 1️⃣ **Verificación de Salud de la API**
-**¿Qué hace?** Verifica que el servicio de clima externo (Open-Meteo) esté funcionando.
+### 1️⃣ **Build (Construcción)**
+**¿Qué hace?** Compila el código y genera los archivos optimizados para producción.
 
-**¿Por qué?** Si la API está caída, no tiene sentido continuar con el resto del proceso.
+**¿Por qué?** Detecta errores de compilación antes de ejecutar pruebas, ahorrando tiempo.
 
 **Herramientas:**
-- **Vitest**: Ejecuta pruebas automáticas para verificar que la API responda correctamente.
+- **Vite**: Compilador ultrarrápido que optimiza el código.
+- **TypeScript**: Verifica tipos durante la compilación.
 
 ---
 
-### 2️⃣ **Calidad de Código y Pruebas Unitarias**
-**¿Qué hace?** Revisa que el código esté bien escrito y que las funciones individuales funcionen.
+### 2️⃣ **Unit Tests (Pruebas Unitarias)**
+**¿Qué hace?** Prueba cada función individual del código por separado.
+
+**Ejemplo:** Verifica que la función de conversión de temperatura funcione correctamente.
+
+**Herramientas:**
+- **Vitest**: Framework de pruebas rápido y moderno.
+- **Coverage**: Mide qué porcentaje del código está cubierto por pruebas.
+
+---
+
+### 3️⃣ **Integration Tests (Pruebas de Integración)**
+**¿Qué hace?** Verifica que los servicios externos (API de clima) funcionen correctamente.
+
+**¿Por qué?** Si la API externa está caída o cambió su formato, lo detectamos inmediatamente.
+
+**Herramientas:**
+- **Vitest**: Ejecuta llamadas reales a la API de Open-Meteo.
+- **Contract Testing**: Valida que el esquema de datos no haya cambiado.
+
+---
+
+### 4️⃣ **Code Quality (Calidad de Código)**
+**¿Qué hace?** Analiza el código en busca de problemas de calidad, seguridad y estilo.
 
 **Pasos:**
-1. **Lint** - Verifica que el código siga las reglas de estilo (como ortografía en un documento).
-2. **Pruebas Unitarias** - Prueba cada función por separado (ej: "¿convierte correctamente grados Celsius?").
-3. **Cobertura de Código** - Mide qué porcentaje del código está siendo probado.
-4. **Análisis de Calidad** - Detecta código duplicado, bugs potenciales y problemas de seguridad.
+1. **Lint** - Verifica que el código siga las reglas de estilo.
+2. **SonarCloud** - Detecta bugs potenciales, código duplicado y vulnerabilidades de seguridad.
 
 **Herramientas:**
-- **ESLint**: Revisa el estilo y calidad del código.
-- **Vitest**: Ejecuta las pruebas unitarias.
-- **SonarCloud**: Analiza la calidad del código y genera reportes detallados.
+- **ESLint**: Analizador de código JavaScript/TypeScript.
+- **SonarCloud**: Plataforma de análisis de calidad en la nube.
 
 ---
 
-### 3️⃣ **Pruebas End-to-End (E2E)**
-**¿Qué hace?** Simula a un usuario real usando la aplicación completa.
-
-**Ejemplo:** Abre el navegador, busca "Santiago de Chile", verifica que aparezca el clima correctamente, hace clic en el mapa, prueba el botón "Limpiar", etc.
-
-**Herramientas:**
-- **Playwright**: Automatiza un navegador real para probar la aplicación como lo haría un usuario.
-
----
-
-### 4️⃣ **Despliegue a Desarrollo (DEV)**
+### 5️⃣ **Deploy to Dev (Despliegue a Desarrollo)**
 **¿Qué hace?** Publica la aplicación en un entorno de pruebas para desarrolladores.
 
 **URL:** `https://mmiguel40.github.io/clima-app/dev/`
 
 **Herramientas:**
-- **Vite**: Compila y optimiza el código para producción.
-- **GitHub Pages**: Aloja la aplicación en internet de forma gratuita.
+- **Vite**: Compila y optimiza el código.
+- **GitHub Pages**: Aloja la aplicación gratuitamente.
 
 ---
 
-### 5️⃣ **Smoke Tests en DEV** 🆕
-**¿Qué hace?** Valida que el despliegue a DEV funcionó correctamente ejecutando pruebas rápidas.
+### 6️⃣ **Smoke Tests (Pruebas de Humo)**
+**¿Qué hace?** Ejecuta pruebas rápidas para verificar que el despliegue a DEV funcionó.
 
 **Datos de Prueba:** Santiago de Chile, Buenos Aires
 
 **¿Por qué?** Detecta problemas de despliegue antes de avanzar a QA.
 
 **Herramientas:**
-- **Playwright**: Ejecuta pruebas E2E contra el sitio desplegado.
+- **Playwright**: Automatiza un navegador real para probar la aplicación desplegada.
 
 ---
 
-### 6️⃣ **Despliegue a QA (Control de Calidad)**
+### 7️⃣ **Deploy to Staging/QA (Despliegue a QA)**
 **¿Qué hace?** Publica en un entorno donde el equipo de QA puede hacer pruebas manuales.
 
 **⏸️ REQUIERE APROBACIÓN MANUAL** - Un humano debe revisar y aprobar antes de continuar.
@@ -77,25 +87,28 @@ Es como una **línea de producción automática** que verifica que tu código fu
 **URL:** `https://mmiguel40.github.io/clima-app/qa/`
 
 **Herramientas:**
-- **Vite**: Compila el código.
-- **GitHub Pages**: Publica en un subdirectorio separado.
 - **GitHub Environments**: Gestiona la aprobación manual.
+- **GitHub Pages**: Publica en un subdirectorio separado.
 
 ---
 
-### 7️⃣ **Smoke Tests en QA** 🆕
-**¿Qué hace?** Valida que el despliegue a QA funcionó correctamente con datos diferentes a DEV.
+### 8️⃣ **Acceptance Tests (Pruebas de Aceptación)**
+**¿Qué hace?** Ejecuta pruebas completas de usuario final en el ambiente de QA.
+
+**Incluye:**
+- **E2E Tests**: Simula usuarios reales navegando la aplicación completa.
+- **Smoke Tests QA**: Validación rápida con datos específicos de QA.
 
 **Datos de Prueba:** Madrid, Bogotá, Ciudad de México
 
-**¿Por qué?** Prueba con ciudades que tienen acentos y caracteres especiales del español.
+**¿Por qué?** Valida que la aplicación funcione como espera el usuario final.
 
 **Herramientas:**
-- **Playwright**: Ejecuta pruebas E2E contra el sitio de QA.
+- **Playwright**: Ejecuta tests E2E completos y smoke tests.
 
 ---
 
-### 8️⃣ **Despliegue a Producción (PROD)**
+### 9️⃣ **Deploy to Production (Despliegue a Producción)**
 **¿Qué hace?** Publica la versión final que verán los usuarios reales.
 
 **⏸️ REQUIERE APROBACIÓN MANUAL** - Doble verificación antes de publicar al público.
@@ -103,21 +116,20 @@ Es como una **línea de producción automática** que verifica que tu código fu
 **URL:** `https://mmiguel40.github.io/clima-app/`
 
 **Herramientas:**
-- **Vite**: Compila el código optimizado.
+- **GitHub Environments**: Gestiona la aprobación manual final.
 - **GitHub Pages**: Publica en la URL principal.
-- **GitHub Environments**: Gestiona la aprobación manual.
 
 ---
 
-### 9️⃣ **Smoke Tests en PROD** 🆕
-**¿Qué hace?** Valida que el despliegue a producción funcionó correctamente con datos globales.
+### 🔟 **Post-Deploy Tests (Pruebas Post-Despliegue)**
+**¿Qué hace?** Valida que el despliegue a producción funcionó correctamente.
 
 **Datos de Prueba:** New York, Tokyo, São Paulo
 
-**¿Por qué?** Prueba con ciudades de diferentes continentes para validación global.
+**¿Por qué?** Confirma que los usuarios reales pueden acceder y usar la aplicación.
 
 **Herramientas:**
-- **Playwright**: Ejecuta pruebas E2E contra el sitio de producción.
+- **Playwright**: Ejecuta smoke tests contra el sitio de producción.
 
 ---
 
@@ -130,59 +142,70 @@ Es como una **línea de producción automática** que verifica que tu código fu
            │
            ▼
     ┌──────────────┐
-    │ 1. API Check │ ✅ ¿Funciona la API externa?
+    │ 1. Build     │ 🔨 Compilar código
     └──────┬───────┘
            │
-           ▼
-    ┌──────────────────┐
-    │ 2. Calidad       │ ✅ ¿Código limpio y probado?
-    │    & Unit Tests  │
-    └──────┬───────────┘
-           │
-           ▼
-    ┌──────────────┐
-    │ 3. E2E Tests │ ✅ ¿Funciona la app completa?
-    └──────┬───────┘
-           │
-           ▼
-    ┌──────────────┐
-    │ 4. DEV       │ 🚀 Publicado automáticamente
-    └──────┬───────┘
-           │
-           ▼
-    ┌──────────────┐
-    │ 5. Smoke DEV │ ✅ Pruebas: Santiago, Buenos Aires
-    └──────┬───────┘
-           │
-           ▼
-    ┌──────────────┐
-    │ ⏸️  APROBAR  │ 👤 Revisión manual
-    └──────┬───────┘
-           │
-           ▼
-    ┌──────────────┐
-    │ 6. QA        │ 🚀 Publicado tras aprobación
-    └──────┬───────┘
-           │
-           ▼
-    ┌──────────────┐
-    │ 7. Smoke QA  │ ✅ Pruebas: Madrid, Bogotá, CDMX
-    └──────┬───────┘
-           │
-           ▼
-    ┌──────────────┐
-    │ ⏸️  APROBAR  │ 👤 Revisión manual final
-    └──────┬───────┘
-           │
-           ▼
-    ┌──────────────┐
-    │ 8. PROD      │ 🎉 ¡Disponible para usuarios!
-    └──────┬───────┘
-           │
-           ▼
-    ┌──────────────┐
-    │ 9. Smoke PROD│ ✅ Pruebas: NY, Tokyo, São Paulo
-    └──────────────┘
+           ├─────────────────┐
+           │                 │
+           ▼                 ▼
+    ┌──────────────┐  ┌──────────────────┐
+    │ 2. Unit      │  │ 3. Integration   │
+    │    Tests     │  │    Tests         │
+    └──────┬───────┘  └────────┬─────────┘
+           │                   │
+           └─────────┬─────────┘
+                     │
+                     ▼
+              ┌──────────────┐
+              │ 4. Code      │ 🔍 Análisis de calidad
+              │    Quality   │
+              └──────┬───────┘
+                     │
+                     ▼
+              ┌──────────────┐
+              │ 5. Deploy    │ 🚀 Publicar a DEV
+              │    to Dev    │
+              └──────┬───────┘
+                     │
+                     ▼
+              ┌──────────────┐
+              │ 6. Smoke     │ ✅ Validar DEV
+              │    Tests     │
+              └──────┬───────┘
+                     │
+                     ▼
+              ┌──────────────┐
+              │ ⏸️  APROBAR  │ 👤 Revisión manual
+              └──────┬───────┘
+                     │
+                     ▼
+              ┌──────────────┐
+              │ 7. Deploy    │ 🚀 Publicar a QA
+              │    to QA     │
+              └──────┬───────┘
+                     │
+                     ▼
+              ┌──────────────┐
+              │ 8. Acceptance│ ✅ Tests completos en QA
+              │    Tests     │
+              └──────┬───────┘
+                     │
+                     ▼
+              ┌──────────────┐
+              │ ⏸️  APROBAR  │ 👤 Revisión final
+              └──────┬───────┘
+                     │
+                     ▼
+              ┌──────────────┐
+              │ 9. Deploy    │ 🎉 Publicar a PROD
+              │    to Prod   │
+              └──────┬───────┘
+                     │
+                     ▼
+              ┌──────────────┐
+              │10. Post-Deploy│ ✅ Validar PROD
+              │    Tests     │
+              └──────────────┘
 ```
 
 ---
@@ -191,11 +214,11 @@ Es como una **línea de producción automática** que verifica que tu código fu
 
 Cada ambiente usa **datos diferentes** para validar escenarios variados:
 
-| Ambiente | Ciudades de Prueba | Propósito |
-|----------|-------------------|-----------|
-| **DEV** | Santiago de Chile, Buenos Aires | Desarrollo con datos conocidos |
-| **QA** | Madrid, Bogotá, Ciudad de México | Validación con acentos y caracteres especiales |
-| **PROD** | New York, Tokyo, São Paulo | Cobertura global con ciudades internacionales |
+| Etapa | Ambiente | Ciudades de Prueba | Propósito |
+|-------|----------|-------------------|-----------|
+| **Smoke Tests** | DEV | Santiago de Chile, Buenos Aires | Desarrollo con datos conocidos |
+| **Acceptance Tests** | QA | Madrid, Bogotá, Ciudad de México | Validación con acentos y caracteres especiales |
+| **Post-Deploy Tests** | PROD | New York, Tokyo, São Paulo | Cobertura global con ciudades internacionales |
 
 **Beneficios:**
 - ✅ Mayor cobertura de escenarios
@@ -212,8 +235,9 @@ Cada ambiente usa **datos diferentes** para validar escenarios variados:
 | **GitHub Actions** | Ejecuta el pipeline automáticamente |
 | **Node.js 20** | Entorno de ejecución de JavaScript |
 | **Vite** | Compilador y optimizador de código |
-| **Vitest** | Framework de pruebas unitarias |
-| **Playwright** | Framework de pruebas E2E |
+| **TypeScript** | Tipado estático y verificación en tiempo de compilación |
+| **Vitest** | Framework de pruebas unitarias e integración |
+| **Playwright** | Framework de pruebas E2E y smoke tests |
 | **ESLint** | Verificador de calidad de código |
 | **SonarCloud** | Análisis profundo de calidad y seguridad |
 | **GitHub Pages** | Hosting gratuito de sitios web |
@@ -236,19 +260,23 @@ Para activar las pausas de aprobación manual:
 
 ## 📊 Beneficios del Pipeline
 
-✅ **Detección temprana de errores** - Los bugs se encuentran antes de llegar a producción  
+✅ **Build separado** - Detecta errores de compilación temprano  
+✅ **Tests paralelos** - Unit + Integration corren simultáneamente  
 ✅ **Calidad consistente** - Cada cambio pasa por las mismas verificaciones  
 ✅ **Despliegues seguros** - Aprobaciones manuales previenen errores críticos  
 ✅ **Validación post-deploy** - Smoke tests confirman que cada despliegue funcionó  
 ✅ **Segregación de datos** - Cada ambiente prueba con datos diferentes  
 ✅ **Trazabilidad** - Historial completo de qué se desplegó y cuándo  
-✅ **Ahorro de tiempo** - Automatización de tareas repetitivas  
+✅ **Estándar de la industria** - Nombres y orden reconocidos universalmente  
 
 ---
 
 ## 🧪 Comandos de Testing
 
 ```bash
+# Build
+npm run build
+
 # Tests unitarios
 npm run test
 
@@ -285,6 +313,43 @@ El pipeline se activa automáticamente cuando:
 - **`e2e/smoke.spec.ts`** - Smoke tests parametrizados
 - **`e2e/flow.spec.ts`** - Tests E2E completos
 - **`sonar-project.properties`** - Configuración de SonarCloud
+- **`vitest.config.ts`** - Configuración de Vitest
+- **`playwright.config.ts`** - Configuración de Playwright
+
+---
+
+## 📈 Métricas del Pipeline
+
+| Métrica | Valor Típico |
+|---------|--------------|
+| **Tiempo Total** | 8-12 minutos |
+| **Build** | 30-60 segundos |
+| **Unit Tests** | 10-20 segundos |
+| **Integration Tests** | 5-10 segundos |
+| **Code Quality** | 30-60 segundos |
+| **Smoke Tests** | 20-40 segundos |
+| **Acceptance Tests** | 1-2 minutos |
+| **Post-Deploy Tests** | 20-40 segundos |
+
+---
+
+## 🔍 Troubleshooting
+
+### El pipeline falla en Build
+- Verifica errores de TypeScript
+- Revisa que todas las dependencias estén instaladas
+
+### Tests unitarios fallan
+- Ejecuta localmente: `npm run test`
+- Revisa los cambios recientes en el código
+
+### Smoke tests fallan
+- Verifica que el sitio esté desplegado correctamente
+- Revisa la configuración de datos de prueba en `test-data.config.ts`
+
+### SonarCloud falla
+- Verifica que `SONAR_TOKEN` esté configurado en GitHub Secrets
+- Revisa que la rama `main` esté configurada como rama principal en SonarCloud
 
 ---
 

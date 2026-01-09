@@ -18,7 +18,7 @@ Aplicación web moderna para consultar el clima de cualquier ciudad del mundo co
 - **Vite** - Build tool ultrarrápido
 - **Leaflet** + **React-Leaflet** - Mapas interactivos
 - **Open-Meteo API** - Datos meteorológicos gratuitos
-- **Vitest** - Testing unitario
+- **Vitest** - Testing unitario e integración
 - **Playwright** - Testing E2E
 - **ESLint** - Linting de código
 - **SonarCloud** - Análisis de calidad
@@ -41,6 +41,11 @@ npm run dev
 
 ## 🧪 Testing
 
+### Build
+```bash
+npm run build
+```
+
 ### Tests Unitarios
 ```bash
 # Ejecutar tests unitarios
@@ -48,6 +53,12 @@ npm run test
 
 # Con cobertura
 npm run test:coverage
+```
+
+### Tests de Integración
+```bash
+# Tests de contrato con API externa
+npx vitest run src/services/api.contract.test.ts
 ```
 
 ### Tests E2E
@@ -66,11 +77,6 @@ npm run test:smoke:prod  # Prueba con New York, Tokyo, São Paulo
 npm run lint
 ```
 
-### Build de Producción
-```bash
-npm run build
-```
-
 ## 🌍 Despliegues
 
 La aplicación está desplegada en GitHub Pages con tres entornos:
@@ -83,17 +89,34 @@ La aplicación está desplegada en GitHub Pages con tres entornos:
 
 ## 🔄 CI/CD Pipeline
 
-El proyecto cuenta con un pipeline automatizado de 9 etapas que incluye:
+El proyecto cuenta con un pipeline automatizado de **10 etapas** siguiendo estándares de la industria:
 
-1. ✅ **API Health Check** - Verificación de salud de API externa
-2. ✅ **Code Quality & Unit Tests** - Linting, tests unitarios y SonarCloud
-3. ✅ **E2E Tests** - Tests completos con Playwright
-4. 🚀 **Deploy DEV** - Despliegue automático a desarrollo
-5. ✅ **Smoke Tests DEV** - Validación post-deploy con datos de DEV
-6. 🚀 **Deploy QA** - Despliegue a QA (requiere aprobación manual)
-7. ✅ **Smoke Tests QA** - Validación post-deploy con datos de QA
-8. 🚀 **Deploy PROD** - Despliegue a producción (requiere aprobación manual)
-9. ✅ **Smoke Tests PROD** - Validación post-deploy con datos de PROD
+### Etapas del Pipeline
+
+1. **Build** - Compilación y generación de artefactos
+2. **Unit Tests** - Pruebas unitarias con cobertura
+3. **Integration Tests** - Validación de contratos con API externa
+4. **Code Quality** - Análisis estático con ESLint y SonarCloud
+5. **Deploy to Dev** - Despliegue automático a desarrollo
+6. **Smoke Tests** - Validación rápida del despliegue en DEV
+7. **Deploy to Staging/QA** - Despliegue a QA (requiere aprobación manual)
+8. **Acceptance Tests** - Tests E2E completos en QA
+9. **Deploy to Production** - Despliegue a producción (requiere aprobación manual)
+10. **Post-Deploy Tests** - Validación final en producción
+
+### Flujo Visual
+
+```
+Build → Unit Tests + Integration Tests (paralelo)
+  ↓
+Code Quality
+  ↓
+Deploy Dev → Smoke Tests
+  ↓
+Deploy QA → Acceptance Tests
+  ↓
+Deploy Prod → Post-Deploy Tests
+```
 
 ### Segregación de Datos de Prueba
 
@@ -103,7 +126,7 @@ Cada ambiente usa datos diferentes para validar escenarios variados:
 - **QA**: Ciudades con acentos españoles (validación de caracteres especiales)
 - **PROD**: Ciudades globales (cobertura internacional)
 
-Ver [PIPELINE.md](./PIPELINE.md) para más detalles.
+Ver [PIPELINE.md](./PIPELINE.md) para documentación completa del pipeline.
 
 ## 📝 Estructura del Proyecto
 
@@ -118,8 +141,8 @@ clima-app/
 │   │   └── WeatherCard.tsx
 │   ├── services/            # Servicios de API
 │   │   ├── api.ts
-│   │   ├── api.test.ts
-│   │   └── api.contract.test.ts
+│   │   ├── api.test.ts           # Tests unitarios
+│   │   └── api.contract.test.ts  # Tests de integración
 │   └── App.tsx              # Componente principal
 ├── e2e/                     # Tests End-to-End
 │   ├── flow.spec.ts         # Tests E2E completos
@@ -133,23 +156,47 @@ clima-app/
 
 ## 🧪 Arquitectura de Testing
 
+### Pirámide de Tests
+
+```
+        /\
+       /  \
+      / E2E \          ← Pocos, lentos, alto valor
+     /______\
+    /        \
+   / Integration\     ← Moderados, validan contratos
+  /____________\
+ /              \
+/  Unit Tests    \    ← Muchos, rápidos, bajo costo
+/__________________\
+```
+
 ### Tests Unitarios
 - **Ubicación**: `src/**/*.test.ts`
 - **Framework**: Vitest
-- **Cobertura**: API services, utilidades
+- **Cobertura**: Servicios de API, utilidades
 - **Idioma**: Español
+- **Ejecución**: Paralela con Integration Tests
 
-### Tests de Contrato
+### Tests de Integración
 - **Ubicación**: `src/services/api.contract.test.ts`
 - **Propósito**: Validar que la API externa (Open-Meteo) no cambió su esquema
-- **Ejecución**: En el pipeline de CI
+- **Tipo**: Contract Testing
+- **Ejecución**: Paralela con Unit Tests
 
-### Tests E2E
+### Tests de Aceptación (E2E)
 - **Ubicación**: `e2e/`
 - **Framework**: Playwright
 - **Tipos**:
   - **flow.spec.ts**: Tests completos del flujo de usuario
   - **smoke.spec.ts**: Tests rápidos post-deploy con datos por ambiente
+- **Ejecución**: En QA después del despliegue
+
+### Smoke Tests
+- **Propósito**: Validación rápida post-deploy
+- **Ambientes**: DEV, QA, PROD
+- **Datos**: Segregados por ambiente
+- **Tiempo**: 20-40 segundos
 
 ### Datos de Prueba
 - **Archivo**: `test-data.config.ts`
@@ -173,8 +220,26 @@ feat: nueva característica
 fix: corrección de bug
 docs: cambios en documentación
 test: agregar o modificar tests
+refactor: refactorización de código
 chore: tareas de mantenimiento
 ```
+
+### Estándares de Código
+
+- **ESLint**: Configurado para React + TypeScript
+- **Prettier**: Formateo automático
+- **SonarCloud**: Análisis de calidad continuo
+- **Tests**: Cobertura mínima del 80%
+
+## 📊 Métricas del Proyecto
+
+| Métrica | Valor |
+|---------|-------|
+| **Cobertura de Tests** | ~85% |
+| **Tiempo de Pipeline** | 8-12 minutos |
+| **Ambientes** | 3 (DEV, QA, PROD) |
+| **Tests Automatizados** | Unit + Integration + E2E + Smoke |
+| **Calidad de Código** | A (SonarCloud) |
 
 ## 📄 Licencia
 
@@ -191,6 +256,12 @@ Este proyecto es de código abierto y está disponible bajo la licencia MIT.
 - [Open-Meteo](https://open-meteo.com/) - API de clima gratuita
 - [Leaflet](https://leafletjs.com/) - Biblioteca de mapas
 - [GitHub Pages](https://pages.github.com/) - Hosting gratuito
+- [SonarCloud](https://sonarcloud.io/) - Análisis de calidad
+
+## 📚 Documentación Adicional
+
+- [PIPELINE.md](./PIPELINE.md) - Documentación completa del pipeline CI/CD
+- [test-data.config.ts](./test-data.config.ts) - Configuración de datos de prueba
 
 ---
 
