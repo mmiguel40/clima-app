@@ -20,6 +20,7 @@ describe('Servicio de API', () => {
             };
 
             globalThis.fetch = vi.fn().mockResolvedValue({
+                ok: true,
                 json: vi.fn().mockResolvedValue(mockResponse),
             });
 
@@ -35,6 +36,7 @@ describe('Servicio de API', () => {
 
         it('retorna null si no se encuentran resultados', async () => {
             globalThis.fetch = vi.fn().mockResolvedValue({
+                ok: true,
                 json: vi.fn().mockResolvedValue({ results: [] }),
             });
 
@@ -61,6 +63,7 @@ describe('Servicio de API', () => {
             };
 
             globalThis.fetch = vi.fn().mockResolvedValue({
+                ok: true,
                 json: vi.fn().mockResolvedValue(mockResponse),
             });
 
@@ -74,6 +77,7 @@ describe('Servicio de API', () => {
 
         it('retorna null cuando no hay current_weather', async () => {
             globalThis.fetch = vi.fn().mockResolvedValue({
+                ok: true,
                 json: vi.fn().mockResolvedValue({}),
             });
 
