@@ -7,8 +7,8 @@ export interface ApiCall {
     status: number;
     statusText: string;
     duration?: number;
-    requestBody?: any;
-    responseBody?: any;
+    requestBody?: unknown;
+    responseBody?: unknown;
 }
 
 export class ApiMonitor {
@@ -34,7 +34,7 @@ export class ApiMonitor {
                     if (postData) {
                         process.stdout.write(`   Body: ${postData}\n`);
                     }
-                } catch (e) {
+                } catch {
                     // Ignorar si no se puede obtener el body
                 }
             }
@@ -62,7 +62,7 @@ export class ApiMonitor {
                     if (contentType?.includes('application/json')) {
                         apiCall.responseBody = await response.json();
                     }
-                } catch (e) {
+                } catch {
                     // Ignorar si no se puede parsear
                 }
 
