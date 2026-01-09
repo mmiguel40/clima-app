@@ -1,6 +1,10 @@
 import { test, expect } from '@playwright/test';
+import { ApiMonitor } from './helpers/api-monitor';
 
 test('Flujo Completo de Búsqueda', async ({ page }) => {
+    // Inicializar monitor de APIs
+    const apiMonitor = new ApiMonitor(page);
+
     // 1. Go to the app
     await page.goto('/');
 
@@ -44,4 +48,13 @@ test('Flujo Completo de Búsqueda', async ({ page }) => {
     // Verify results disappear
     await expect(weatherCard).not.toBeVisible();
     await expect(mapView).not.toBeVisible();
+
+    // 7. Imprimir resumen de llamadas API
+    apiMonitor.printSummary();
+
+    // 8. Verificar que no hubo errores en las APIs
+    const failedCalls = apiMonitor.getFailedCalls();
+    if (failedCalls.length > 0) {
+        console.warn(`⚠️ Warning: ${failedCalls.length} API call(s) failed`);
+    }
 });

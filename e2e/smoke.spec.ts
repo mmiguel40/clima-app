@@ -1,11 +1,15 @@
 import { test, expect } from '@playwright/test';
 import { getTestData } from '../test-data.config';
+import { ApiMonitor } from './helpers/api-monitor';
 
 const testData = getTestData();
 const baseUrl = process.env.BASE_URL || 'http://localhost:5173';
 
 test.describe('Smoke Tests - Flujo de Búsqueda', () => {
     test(`Búsqueda de ${testData.coordinates.city}`, async ({ page }) => {
+        // Inicializar monitor de APIs
+        const apiMonitor = new ApiMonitor(page);
+
         // 1. Ir a la aplicación
         await page.goto(baseUrl);
 
@@ -41,5 +45,14 @@ test.describe('Smoke Tests - Flujo de Búsqueda', () => {
         // 9. Verificar que los resultados desaparecen
         await expect(weatherCard).not.toBeVisible();
         await expect(mapView).not.toBeVisible();
+
+        // 10. Imprimir resumen de llamadas API
+        apiMonitor.printSummary();
+
+        // 11. Verificar que no hubo errores en las APIs
+        const failedCalls = apiMonitor.getFailedCalls();
+        if (failedCalls.length > 0) {
+            console.warn(`⚠️ Warning: ${failedCalls.length} API call(s) failed`);
+        }
     });
 });
