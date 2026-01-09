@@ -10,18 +10,9 @@ Es como una **línea de producción automática** que verifica que tu código fu
 
 ## 📋 Etapas del Pipeline
 
-### 1️⃣ **Build (Construcción)**
-**¿Qué hace?** Compila el código y genera los archivos optimizados para producción.
+El pipeline consta de **9 etapas optimizadas** que siguen estándares de la industria:
 
-**¿Por qué?** Detecta errores de compilación antes de ejecutar pruebas, ahorrando tiempo.
-
-**Herramientas:**
-- **Vite**: Compilador ultrarrápido que optimiza el código.
-- **TypeScript**: Verifica tipos durante la compilación.
-
----
-
-### 2️⃣ **Unit Tests (Pruebas Unitarias)**
+### 1️⃣ **Unit Tests (Pruebas Unitarias)**
 **¿Qué hace?** Prueba cada función individual del código por separado.
 
 **Ejemplo:** Verifica que la función de conversión de temperatura funcione correctamente.
@@ -32,7 +23,7 @@ Es como una **línea de producción automática** que verifica que tu código fu
 
 ---
 
-### 3️⃣ **Integration Tests (Pruebas de Integración)**
+### 2️⃣ **Integration Tests (Pruebas de Integración)**
 **¿Qué hace?** Verifica que los servicios externos (API de clima) funcionen correctamente.
 
 **¿Por qué?** Si la API externa está caída o cambió su formato, lo detectamos inmediatamente.
@@ -43,7 +34,7 @@ Es como una **línea de producción automática** que verifica que tu código fu
 
 ---
 
-### 4️⃣ **Code Quality (Calidad de Código)**
+### 3️⃣ **Code Quality (Calidad de Código)**
 **¿Qué hace?** Analiza el código en busca de problemas de calidad, seguridad y estilo.
 
 **Pasos:**
@@ -56,7 +47,7 @@ Es como una **línea de producción automática** que verifica que tu código fu
 
 ---
 
-### 5️⃣ **Deploy to Dev (Despliegue a Desarrollo)**
+### 4️⃣ **Deploy to Dev (Despliegue a Desarrollo)**
 **¿Qué hace?** Publica la aplicación en un entorno de pruebas para desarrolladores.
 
 **URL:** `https://mmiguel40.github.io/clima-app/dev/`
@@ -67,7 +58,7 @@ Es como una **línea de producción automática** que verifica que tu código fu
 
 ---
 
-### 6️⃣ **Smoke Tests (Pruebas de Humo)**
+### 5️⃣ **Smoke Tests (Pruebas de Humo)**
 **¿Qué hace?** Ejecuta pruebas rápidas para verificar que el despliegue a DEV funcionó.
 
 **Datos de Prueba:** Santiago de Chile, Buenos Aires
@@ -79,7 +70,7 @@ Es como una **línea de producción automática** que verifica que tu código fu
 
 ---
 
-### 7️⃣ **Deploy to Staging/QA (Despliegue a QA)**
+### 6️⃣ **Deploy to Staging/QA (Despliegue a QA)**
 **¿Qué hace?** Publica en un entorno donde el equipo de QA puede hacer pruebas manuales.
 
 **⏸️ REQUIERE APROBACIÓN MANUAL** - Un humano debe revisar y aprobar antes de continuar.
@@ -92,7 +83,7 @@ Es como una **línea de producción automática** que verifica que tu código fu
 
 ---
 
-### 8️⃣ **Acceptance Tests (Pruebas de Aceptación)**
+### 7️⃣ **Acceptance Tests (Pruebas de Aceptación)**
 **¿Qué hace?** Ejecuta pruebas completas de usuario final en el ambiente de QA.
 
 **Incluye:**
@@ -108,7 +99,7 @@ Es como una **línea de producción automática** que verifica que tu código fu
 
 ---
 
-### 9️⃣ **Deploy to Production (Despliegue a Producción)**
+### 8️⃣ **Deploy to Production (Despliegue a Producción)**
 **¿Qué hace?** Publica la versión final que verán los usuarios reales.
 
 **⏸️ REQUIERE APROBACIÓN MANUAL** - Doble verificación antes de publicar al público.
@@ -121,7 +112,7 @@ Es como una **línea de producción automática** que verifica que tu código fu
 
 ---
 
-### 🔟 **Post-Deploy Tests (Pruebas Post-Despliegue)**
+### 9️⃣ **Post-Deploy Tests (Pruebas Post-Despliegue)**
 **¿Qué hace?** Valida que el despliegue a producción funcionó correctamente.
 
 **Datos de Prueba:** New York, Tokyo, São Paulo
@@ -140,16 +131,11 @@ Es como una **línea de producción automática** que verifica que tu código fu
 │  Código Actualizado │
 └──────────┬──────────┘
            │
-           ▼
-    ┌──────────────┐
-    │ 1. Build     │ 🔨 Compilar código
-    └──────┬───────┘
-           │
            ├─────────────────┐
            │                 │
            ▼                 ▼
     ┌──────────────┐  ┌──────────────────┐
-    │ 2. Unit      │  │ 3. Integration   │
+    │ 1. Unit      │  │ 2. Integration   │
     │    Tests     │  │    Tests         │
     └──────┬───────┘  └────────┬─────────┘
            │                   │
@@ -157,19 +143,19 @@ Es como una **línea de producción automática** que verifica que tu código fu
                      │
                      ▼
               ┌──────────────┐
-              │ 4. Code      │ 🔍 Análisis de calidad
+              │ 3. Code      │ 🔍 Análisis de calidad
               │    Quality   │
               └──────┬───────┘
                      │
                      ▼
               ┌──────────────┐
-              │ 5. Deploy    │ 🚀 Publicar a DEV
+              │ 4. Deploy    │ 🚀 Publicar a DEV
               │    to Dev    │
               └──────┬───────┘
                      │
                      ▼
               ┌──────────────┐
-              │ 6. Smoke     │ ✅ Validar DEV
+              │ 5. Smoke     │ ✅ Validar DEV
               │    Tests     │
               └──────┬───────┘
                      │
@@ -180,13 +166,13 @@ Es como una **línea de producción automática** que verifica que tu código fu
                      │
                      ▼
               ┌──────────────┐
-              │ 7. Deploy    │ 🚀 Publicar a QA
+              │ 6. Deploy    │ 🚀 Publicar a QA
               │    to QA     │
               └──────┬───────┘
                      │
                      ▼
               ┌──────────────┐
-              │ 8. Acceptance│ ✅ Tests completos en QA
+              │ 7. Acceptance│ ✅ Tests completos en QA
               │    Tests     │
               └──────┬───────┘
                      │
@@ -197,13 +183,13 @@ Es como una **línea de producción automática** que verifica que tu código fu
                      │
                      ▼
               ┌──────────────┐
-              │ 9. Deploy    │ 🎉 Publicar a PROD
+              │ 8. Deploy    │ 🎉 Publicar a PROD
               │    to Prod   │
               └──────┬───────┘
                      │
                      ▼
               ┌──────────────┐
-              │10. Post-Deploy│ ✅ Validar PROD
+              │ 9. Post-Deploy│ ✅ Validar PROD
               │    Tests     │
               └──────────────┘
 ```

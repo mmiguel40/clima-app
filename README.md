@@ -89,25 +89,24 @@ La aplicación está desplegada en GitHub Pages con tres entornos:
 
 ## 🔄 CI/CD Pipeline
 
-El proyecto cuenta con un pipeline automatizado de **10 etapas** siguiendo estándares de la industria:
+El proyecto cuenta con un pipeline automatizado de **9 etapas optimizadas** siguiendo estándares de la industria:
 
 ### Etapas del Pipeline
 
-1. **Build** - Compilación y generación de artefactos
-2. **Unit Tests** - Pruebas unitarias con cobertura
-3. **Integration Tests** - Validación de contratos con API externa
-4. **Code Quality** - Análisis estático con ESLint y SonarCloud
-5. **Deploy to Dev** - Despliegue automático a desarrollo
-6. **Smoke Tests** - Validación rápida del despliegue en DEV
-7. **Deploy to Staging/QA** - Despliegue a QA (requiere aprobación manual)
-8. **Acceptance Tests** - Tests E2E completos en QA
-9. **Deploy to Production** - Despliegue a producción (requiere aprobación manual)
-10. **Post-Deploy Tests** - Validación final en producción
+1. **Unit Tests** - Pruebas unitarias con cobertura
+2. **Integration Tests** - Validación de contratos con API externa
+3. **Code Quality** - Análisis estático con ESLint y SonarCloud
+4. **Deploy to Dev** - Despliegue automático a desarrollo
+5. **Smoke Tests** - Validación rápida del despliegue en DEV
+6. **Deploy to Staging/QA** - Despliegue a QA (requiere aprobación manual)
+7. **Acceptance Tests** - Tests E2E completos en QA
+8. **Deploy to Production** - Despliegue a producción (requiere aprobación manual)
+9. **Post-Deploy Tests** - Validación final en producción
 
 ### Flujo Visual
 
 ```
-Build → Unit Tests + Integration Tests (paralelo)
+Unit Tests + Integration Tests (paralelo)
   ↓
 Code Quality
   ↓
