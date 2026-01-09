@@ -44,7 +44,7 @@ describe('AnimatedBackground', () => {
     });
 
     it('limpia el intervalo al desmontar', () => {
-        const clearIntervalSpy = vi.spyOn(global, 'clearInterval');
+        const clearIntervalSpy = vi.spyOn(globalThis, 'clearInterval');
         const { unmount } = render(<AnimatedBackground />);
 
         unmount();
