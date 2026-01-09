@@ -39,7 +39,7 @@ Es como una **línea de producción automática** que verifica que tu código fu
 ### 3️⃣ **Pruebas End-to-End (E2E)**
 **¿Qué hace?** Simula a un usuario real usando la aplicación completa.
 
-**Ejemplo:** Abre el navegador, busca "Santiago", verifica que aparezca el clima, hace clic en el mapa, etc.
+**Ejemplo:** Abre el navegador, busca "Santiago de Chile", verifica que aparezca el clima correctamente, hace clic en el mapa, prueba el botón "Limpiar", etc.
 
 **Herramientas:**
 - **Playwright**: Automatiza un navegador real para probar la aplicación como lo haría un usuario.
