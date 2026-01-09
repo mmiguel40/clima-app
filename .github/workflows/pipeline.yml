@@ -11,10 +11,9 @@ permissions:
   contents: write
 
 jobs:
-  # JOB 1: API CONTRACT / HEALTH CHECK
-  # Fails fast if external API is down
-  api-health-check:
-    name: API Health Check
+  # STAGE 1: BUILD
+  build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,63 +21,76 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Install Deps
+      - name: Install Dependencies
         run: npm ci
-      - name: Run Contract Tests
-        run: npx vitest run src/services/api.contract.test.ts
+      - name: Build Application
+        run: npm run build
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist/
+          retention-days: 1
 
-  # JOB 2: QUALITY & UNIT TESTS
-  # Runs in parallel with Health Check if possible, or after
-  quality-check:
-    name: Code Quality & Unit Tests
-    needs: api-health-check
+  # STAGE 2: UNIT TESTS
+  unit-tests:
+    name: Unit Tests
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Install Deps
+      - name: Install Dependencies
         run: npm ci
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Unit Tests (with Coverage)
+      - name: Run Unit Tests
         run: npx vitest run --coverage --exclude src/services/api.contract.test.ts --exclude src/components/**/*.test.tsx
 
-      # SONARCLOUD SCAN
+  # STAGE 3: INTEGRATION TESTS
+  integration-tests:
+    name: Integration Tests
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install Dependencies
+        run: npm ci
+      - name: Run API Contract Tests
+        run: npx vitest run src/services/api.contract.test.ts
+
+  # STAGE 4: CODE QUALITY
+  code-quality:
+    name: Code Quality
+    needs: [unit-tests, integration-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install Dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run lint
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  # JOB 3: E2E TESTS
-  e2e-tests:
-    name: E2E Tests
-    needs: quality-check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Install Deps
-        run: npm ci
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-      - name: Run E2E Tests
-        run: npm run test:e2e
-
-  # JOB 4: DEPLOY DEV
+  # STAGE 5: DEPLOY TO DEV
   deploy-dev:
-    name: Deploy to DEV
-    needs: [quality-check, e2e-tests]
+    name: Deploy to Dev
+    needs: code-quality
     runs-on: ubuntu-latest
     environment:
       name: development
@@ -103,9 +115,9 @@ jobs:
           destination_dir: dev
           keep_files: true
 
-  # JOB 5: SMOKE TESTS DEV
-  smoke-test-dev:
-    name: Smoke Tests DEV
+  # STAGE 6: SMOKE TESTS
+  smoke-tests:
+    name: Smoke Tests
     needs: deploy-dev
     runs-on: ubuntu-latest
     steps:
@@ -116,15 +128,15 @@ jobs:
       - run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
-      - name: Run Smoke Tests DEV
+      - name: Run Smoke Tests
         run: npm run test:smoke:dev
         env:
           TEST_ENV: development
 
-  # JOB 6: DEPLOY QA
-  deploy-qa:
-    name: Deploy to QA
-    needs: smoke-test-dev
+  # STAGE 7: DEPLOY TO STAGING/QA
+  deploy-staging:
+    name: Deploy to Staging/QA
+    needs: smoke-tests
     runs-on: ubuntu-latest
     environment:
       name: qa
@@ -147,10 +159,10 @@ jobs:
           destination_dir: qa
           keep_files: true
 
-  # JOB 7: SMOKE TESTS QA
-  smoke-test-qa:
-    name: Smoke Tests QA
-    needs: deploy-qa
+  # STAGE 8: ACCEPTANCE TESTS
+  acceptance-tests:
+    name: Acceptance Tests
+    needs: deploy-staging
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -159,16 +171,20 @@ jobs:
           node-version: 20
       - run: npm ci
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install --with-deps
+      - name: Run E2E Tests on QA
+        run: npm run test:e2e
+        env:
+          BASE_URL: https://mmiguel40.github.io/clima-app/qa/
       - name: Run Smoke Tests QA
         run: npm run test:smoke:qa
         env:
           TEST_ENV: qa
 
-  # JOB 8: DEPLOY PROD
-  deploy-prod:
-    name: Deploy to PROD
-    needs: smoke-test-qa
+  # STAGE 9: DEPLOY TO PRODUCTION
+  deploy-production:
+    name: Deploy to Production
+    needs: acceptance-tests
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
@@ -192,10 +208,10 @@ jobs:
           destination_dir: ./
           keep_files: true
 
-  # JOB 9: SMOKE TESTS PROD
-  smoke-test-prod:
-    name: Smoke Tests PROD
-    needs: deploy-prod
+  # STAGE 10: POST-DEPLOY TESTS
+  post-deploy-tests:
+    name: Post-Deploy Tests
+    needs: deploy-production
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -205,7 +221,7 @@ jobs:
       - run: npm ci
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
-      - name: Run Smoke Tests PROD
+      - name: Run Production Smoke Tests
         run: npm run test:smoke:prod
         env:
           TEST_ENV: production

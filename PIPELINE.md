@@ -57,7 +57,19 @@ Es como una **línea de producción automática** que verifica que tu código fu
 
 ---
 
-### 5️⃣ **Despliegue a QA (Control de Calidad)**
+### 5️⃣ **Smoke Tests en DEV** 🆕
+**¿Qué hace?** Valida que el despliegue a DEV funcionó correctamente ejecutando pruebas rápidas.
+
+**Datos de Prueba:** Santiago de Chile, Buenos Aires
+
+**¿Por qué?** Detecta problemas de despliegue antes de avanzar a QA.
+
+**Herramientas:**
+- **Playwright**: Ejecuta pruebas E2E contra el sitio desplegado.
+
+---
+
+### 6️⃣ **Despliegue a QA (Control de Calidad)**
 **¿Qué hace?** Publica en un entorno donde el equipo de QA puede hacer pruebas manuales.
 
 **⏸️ REQUIERE APROBACIÓN MANUAL** - Un humano debe revisar y aprobar antes de continuar.
@@ -71,7 +83,19 @@ Es como una **línea de producción automática** que verifica que tu código fu
 
 ---
 
-### 6️⃣ **Despliegue a Producción (PROD)**
+### 7️⃣ **Smoke Tests en QA** 🆕
+**¿Qué hace?** Valida que el despliegue a QA funcionó correctamente con datos diferentes a DEV.
+
+**Datos de Prueba:** Madrid, Bogotá, Ciudad de México
+
+**¿Por qué?** Prueba con ciudades que tienen acentos y caracteres especiales del español.
+
+**Herramientas:**
+- **Playwright**: Ejecuta pruebas E2E contra el sitio de QA.
+
+---
+
+### 8️⃣ **Despliegue a Producción (PROD)**
 **¿Qué hace?** Publica la versión final que verán los usuarios reales.
 
 **⏸️ REQUIERE APROBACIÓN MANUAL** - Doble verificación antes de publicar al público.
@@ -82,6 +106,18 @@ Es como una **línea de producción automática** que verifica que tu código fu
 - **Vite**: Compila el código optimizado.
 - **GitHub Pages**: Publica en la URL principal.
 - **GitHub Environments**: Gestiona la aprobación manual.
+
+---
+
+### 9️⃣ **Smoke Tests en PROD** 🆕
+**¿Qué hace?** Valida que el despliegue a producción funcionó correctamente con datos globales.
+
+**Datos de Prueba:** New York, Tokyo, São Paulo
+
+**¿Por qué?** Prueba con ciudades de diferentes continentes para validación global.
+
+**Herramientas:**
+- **Playwright**: Ejecuta pruebas E2E contra el sitio de producción.
 
 ---
 
@@ -115,12 +151,22 @@ Es como una **línea de producción automática** que verifica que tu código fu
            │
            ▼
     ┌──────────────┐
+    │ 5. Smoke DEV │ ✅ Pruebas: Santiago, Buenos Aires
+    └──────┬───────┘
+           │
+           ▼
+    ┌──────────────┐
     │ ⏸️  APROBAR  │ 👤 Revisión manual
     └──────┬───────┘
            │
            ▼
     ┌──────────────┐
-    │ 5. QA        │ 🚀 Publicado tras aprobación
+    │ 6. QA        │ 🚀 Publicado tras aprobación
+    └──────┬───────┘
+           │
+           ▼
+    ┌──────────────┐
+    │ 7. Smoke QA  │ ✅ Pruebas: Madrid, Bogotá, CDMX
     └──────┬───────┘
            │
            ▼
@@ -130,9 +176,32 @@ Es como una **línea de producción automática** que verifica que tu código fu
            │
            ▼
     ┌──────────────┐
-    │ 6. PROD      │ 🎉 ¡Disponible para usuarios!
+    │ 8. PROD      │ 🎉 ¡Disponible para usuarios!
+    └──────┬───────┘
+           │
+           ▼
+    ┌──────────────┐
+    │ 9. Smoke PROD│ ✅ Pruebas: NY, Tokyo, São Paulo
     └──────────────┘
 ```
+
+---
+
+## 🎯 Segregación de Datos de Prueba
+
+Cada ambiente usa **datos diferentes** para validar escenarios variados:
+
+| Ambiente | Ciudades de Prueba | Propósito |
+|----------|-------------------|-----------|
+| **DEV** | Santiago de Chile, Buenos Aires | Desarrollo con datos conocidos |
+| **QA** | Madrid, Bogotá, Ciudad de México | Validación con acentos y caracteres especiales |
+| **PROD** | New York, Tokyo, São Paulo | Cobertura global con ciudades internacionales |
+
+**Beneficios:**
+- ✅ Mayor cobertura de escenarios
+- ✅ Detecta bugs específicos de datos
+- ✅ Valida que cada despliegue funcionó correctamente
+- ✅ Independencia entre ambientes
 
 ---
 
@@ -149,6 +218,7 @@ Es como una **línea de producción automática** que verifica que tu código fu
 | **SonarCloud** | Análisis profundo de calidad y seguridad |
 | **GitHub Pages** | Hosting gratuito de sitios web |
 | **GitHub Environments** | Gestión de aprobaciones manuales |
+| **cross-env** | Variables de entorno multiplataforma |
 
 ---
 
@@ -169,8 +239,33 @@ Para activar las pausas de aprobación manual:
 ✅ **Detección temprana de errores** - Los bugs se encuentran antes de llegar a producción  
 ✅ **Calidad consistente** - Cada cambio pasa por las mismas verificaciones  
 ✅ **Despliegues seguros** - Aprobaciones manuales previenen errores críticos  
+✅ **Validación post-deploy** - Smoke tests confirman que cada despliegue funcionó  
+✅ **Segregación de datos** - Cada ambiente prueba con datos diferentes  
 ✅ **Trazabilidad** - Historial completo de qué se desplegó y cuándo  
 ✅ **Ahorro de tiempo** - Automatización de tareas repetitivas  
+
+---
+
+## 🧪 Comandos de Testing
+
+```bash
+# Tests unitarios
+npm run test
+
+# Tests E2E completos
+npm run test:e2e
+
+# Smoke tests por ambiente
+npm run test:smoke:dev
+npm run test:smoke:qa
+npm run test:smoke:prod
+
+# Linting
+npm run lint
+
+# Cobertura de código
+npm run test:coverage
+```
 
 ---
 
@@ -180,6 +275,16 @@ El pipeline se activa automáticamente cuando:
 - Se hace `push` a las ramas `main`, `develop` o `release/*`
 - Se abre o actualiza un Pull Request
 - Se ejecuta manualmente desde GitHub Actions
+
+---
+
+## 📁 Archivos de Configuración
+
+- **`.github/workflows/pipeline.yml`** - Definición del pipeline
+- **`test-data.config.ts`** - Datos de prueba por ambiente
+- **`e2e/smoke.spec.ts`** - Smoke tests parametrizados
+- **`e2e/flow.spec.ts`** - Tests E2E completos
+- **`sonar-project.properties`** - Configuración de SonarCloud
 
 ---
 
