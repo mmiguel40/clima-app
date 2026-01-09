@@ -1,0 +1,74 @@
+.weather-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 1rem 2rem;
+    /* Compact padding */
+    border-radius: 15px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+    margin-top: 0;
+    color: white;
+    width: 100%;
+    max-width: 900px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.weather-card h2 {
+    margin: 0 0 1rem 0;
+    font-size: 1.5rem;
+    /* Smaller, cleaner title */
+    font-weight: 700;
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    /* Handle long names */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.weather-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    /* Spread items evenly */
+    gap: 1rem;
+    padding: 0;
+    flex-wrap: nowrap;
+    /* Prevent wrapping if possible */
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 0.8rem 1.5rem;
+    border-radius: 10px;
+    transition: background 0.3s;
+    flex: 1;
+    /* Equal width */
+}
+
+.info-item:hover {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 0.3rem;
+}
+
+.value {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+}

@@ -1,0 +1,121 @@
+name: CI/CD Pipeline
+
+on:
+    push:
+        branches: ["main", "develop", "release/*"]
+    pull_request:
+        types: [opened, synchronize, reopened]
+    workflow_dispatch:
+
+permissions:
+    contents: write
+
+jobs:
+    # JOB 1: API CONTRACT / HEALTH CHECK
+    # Fails fast if external API is down
+    api-health-check:
+        name: API Health Check
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+            - name: Install Deps
+              run: npm ci
+            - name: Run Contract Tests
+              run: npx vitest run src/services/api.contract.test.ts
+
+    # JOB 2: QUALITY & UNIT TESTS
+    # Runs in parallel with Health Check if possible, or after
+    quality-check:
+        name: Code Quality & Unit Tests
+        needs: api-health-check
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0 # Shallow clones should be disabled for a better relevancy of analysis
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+            - name: Install Deps
+              run: npm ci
+
+            - name: Lint
+              run: npm run lint
+
+            - name: Unit Tests (with Coverage)
+              run: npx vitest run --coverage --exclude src/services/api.contract.test.ts
+
+            # SONARCLOUD SCAN
+            - name: SonarCloud Scan
+              uses: SonarSource/sonarcloud-github-action@master
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+                  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+              # Only run if SONAR_TOKEN is set in secrets
+              if: secrets.SONAR_TOKEN != ''
+
+    # JOB 3: DEPLOYMENT (Pages)
+    deploy:
+        name: Deploy to GitHub Pages
+        needs: quality-check
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/heads/release/')
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+            - name: Install Deps
+              run: npm ci
+
+            # DETERMINE ENVIRONMENT & BUILD
+            - name: Build for DEV
+              if: github.ref == 'refs/heads/develop'
+              run: |
+                  export VITE_ENV_LABEL="DEV ENVIRONMENT"
+                  npm run build -- --base=/dev/
+              env:
+                  VITE_ENV_LABEL: "DEV ENVIRONMENT"
+
+            - name: Build for QA
+              if: startsWith(github.ref, 'refs/heads/release/')
+              run: |
+                  npm run build -- --base=/qa/
+              env:
+                  VITE_ENV_LABEL: "QA TESTING"
+
+            - name: Build for PROD
+              if: github.ref == 'refs/heads/main'
+              run: npm run build
+              env:
+                  VITE_ENV_LABEL: ""
+
+            # E2E TESTING (Optional: Run against local build before deploying)
+            - name: Install Playwright Browsers
+              run: npx playwright install --with-deps
+
+            # We start preview server to test the build artifact
+            - name: Run E2E Tests
+              run: |
+                  npx vite preview --port 5173 & 
+                  npx playwright test
+
+            - name: Deploy to GitHub Pages
+              uses: peaceiris/actions-gh-pages@v3
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  publish_dir: ./dist
+                  keep_files: true # Vital to not delete other environments
+                  # For dev/qa we might want to keep history or use subfolders,
+                  # but peaceiris action usually overwrites the branch.
+                  # For this POC, we will just publish to gh-pages branch.
+                  # To support subfolders properly in one branch, we would need to pull existing, verify, etc.
+                  # Or simpler: Just deploy to separate branches like gh-pages-dev, gh-pages-qa.
+                  # Let's use formatting:
+                  destination_dir: ${{ github.ref == 'refs/heads/main' && './' || (github.ref == 'refs/heads/develop' && 'dev') || 'qa' }}

@@ -1,0 +1,113 @@
+.app-container {
+  width: 100%;
+  max-width: 98%;
+  margin: 0 auto;
+  padding: 0.5rem;
+  /* Minimal padding */
+  text-align: center;
+  position: relative;
+  z-index: 10;
+  color: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  /* Prevent scroll */
+}
+
+/* Header Section */
+h1 {
+  font-size: 2.5rem;
+  /* Smaller title */
+  margin-bottom: 0.5rem;
+  margin-top: 1rem;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  font-weight: 800;
+  letter-spacing: -2px;
+  background: linear-gradient(to right, #ffffff, #a8c0ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+p {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  margin-top: 0;
+}
+
+.error-message {
+  background: rgba(231, 76, 60, 0.9);
+  color: white;
+  padding: 0.5rem 1.5rem;
+  border-radius: 50px;
+  margin: 0.5rem 0;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Vertical Stack Layout - COMPACT ROW BY ROW */
+.results-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 1rem;
+  /* Tighter gap */
+  align-items: center;
+  justify-content: flex-start;
+  animation: fadeIn 0.5s ease-out;
+  margin-top: 0.5rem;
+  flex: 1;
+  /* Allow to fill remaining space */
+}
+
+.result-half {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.map-half {
+  height: 50vh;
+  /* Controlled height for map */
+  width: 100%;
+}
+
+.weather-half {
+  width: 100%;
+  /* No fixed height, let content decide but keep it compact */
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .map-half {
+    height: 40vh;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

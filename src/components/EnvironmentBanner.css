@@ -1,0 +1,14 @@
+.environment-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 5px;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+    z-index: 9999;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
