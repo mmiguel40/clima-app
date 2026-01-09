@@ -1,16 +1,7 @@
-import { useEffect, useState } from 'react';
 import './EnvironmentBanner.css';
 
 const EnvironmentBanner = () => {
-    const [envLabel, setEnvLabel] = useState<string>('');
-
-    useEffect(() => {
-        // Read from Vite environment variables
-        const label = import.meta.env.VITE_ENV_LABEL;
-        if (label) {
-            setEnvLabel(label);
-        }
-    }, []);
+    const envLabel = import.meta.env.VITE_ENV_LABEL;
 
     if (!envLabel) return null;
 
