@@ -47,8 +47,8 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Unit Tests (with Coverage)
-        run: npx vitest run --coverage --exclude src/services/api.contract.test.ts
+      - name: Unit Tests
+        run: npx vitest run --exclude src/services/api.contract.test.ts
 
       # SONARCLOUD SCAN
       - name: SonarCloud Scan
