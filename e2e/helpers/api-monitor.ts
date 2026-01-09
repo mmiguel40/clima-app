@@ -14,6 +14,7 @@ export interface ApiCall {
 export class ApiMonitor {
     private apiCalls: ApiCall[] = [];
     private requestStartTimes: Map<string, number> = new Map();
+    private requestBodies: Map<string, string | null> = new Map();
 
     constructor(private page: Page, private apiPatterns: string[] = ['open-meteo.com']) {
         this.setupListeners();
@@ -24,15 +25,14 @@ export class ApiMonitor {
         this.page.on('request', async (request) => {
             if (this.shouldMonitor(request.url())) {
                 const requestId = `${request.method()}-${request.url()}`;
+                // Solo mantenemos el inicio en el mapa para calcular duración
                 this.requestStartTimes.set(requestId, Date.now());
 
-                process.stdout.write(`📤 [REQUEST] ${request.method()} ${request.url()}\n`);
-
-                // Capturar body si existe
+                // No imprimimos en vivo para reducir ruido, solo guardamos data
                 try {
                     const postData = request.postData();
                     if (postData) {
-                        process.stdout.write(`   Body: ${postData}\n`);
+                        this.requestBodies.set(requestId, postData);
                     }
                 } catch {
                     // Ignorar si no se puede obtener el body
@@ -46,6 +46,7 @@ export class ApiMonitor {
                 const requestId = `${response.request().method()}-${response.url()}`;
                 const startTime = this.requestStartTimes.get(requestId);
                 const duration = startTime ? Date.now() - startTime : undefined;
+                const requestBody = this.requestBodies.get(requestId);
 
                 const apiCall: ApiCall = {
                     timestamp: new Date().toISOString(),
@@ -53,7 +54,8 @@ export class ApiMonitor {
                     url: response.url(),
                     status: response.status(),
                     statusText: response.statusText(),
-                    duration
+                    duration,
+                    requestBody
                 };
 
                 // Intentar capturar response body (solo para JSON)
@@ -68,11 +70,13 @@ export class ApiMonitor {
 
                 this.apiCalls.push(apiCall);
 
-                // Log con formato según el código de estado
-                const statusEmoji = this.getStatusEmoji(response.status());
-                process.stdout.write(`${statusEmoji} [RESPONSE] ${response.status()} ${response.statusText()} - ${response.url()}\n`);
-                if (duration) {
-                    process.stdout.write(`   Duration: ${duration}ms\n`);
+                // Log en vivo solo si la respuesta NO es exitosa (ruido reducido)
+                if (response.status() >= 400) {
+                    const statusEmoji = this.getStatusEmoji(response.status());
+                    process.stdout.write(`${statusEmoji} [API ERROR] ${response.status()} ${response.statusText()} - ${response.url()}\n`);
+                    if (duration) {
+                        process.stdout.write(`   Duration: ${duration}ms\n`);
+                    }
                 }
 
                 // Limpiar el mapa de tiempos
