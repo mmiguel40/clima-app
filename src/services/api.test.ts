@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { getCoordinates, getWeather } from './api';
 
-describe('API Service', () => {
+describe('Servicio de API', () => {
     beforeEach(() => {
         vi.restoreAllMocks();
     });
 
     describe('getCoordinates', () => {
-        it('returns coordinates for a valid city', async () => {
+        it('retorna coordenadas para una ciudad válida', async () => {
             const mockResponse = {
                 results: [
                     {
@@ -33,7 +33,7 @@ describe('API Service', () => {
             expect(fetch).toHaveBeenCalledWith(expect.stringContaining('geocoding-api'));
         });
 
-        it('returns null if no results found', async () => {
+        it('retorna null si no se encuentran resultados', async () => {
             globalThis.fetch = vi.fn().mockResolvedValue({
                 json: vi.fn().mockResolvedValue({ results: [] }),
             });
@@ -44,7 +44,7 @@ describe('API Service', () => {
     });
 
     describe('getWeather', () => {
-        it('returns weather data for valid coords', async () => {
+        it('retorna datos del clima para coordenadas válidas', async () => {
             const mockResponse = {
                 current_weather: {
                     temperature: 25,

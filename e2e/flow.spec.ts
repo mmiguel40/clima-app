@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('Full Search Flow', async ({ page }) => {
+test('Flujo Completo de Búsqueda', async ({ page }) => {
     // 1. Go to the app
     await page.goto('/');
 

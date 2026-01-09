@@ -1,18 +1,18 @@
 // @vitest-environment node
 import { describe, it, expect } from 'vitest';
 
-// CONTRACT TEST: Real Calls to Open-Meteo
-// This test is intended to be run in the CI pipeline to verify the external API is healthy
-// and hasn't changed its schema (contract).
+// PRUEBA DE CONTRATO: Llamadas reales a Open-Meteo
+// Esta prueba se ejecuta en el pipeline de CI para verificar que la API externa esté funcionando
+// y no haya cambiado su esquema (contrato).
 
-describe('Open-Meteo API Contract', () => {
-    it('Geocoding API returns expected schema for "Santiago"', async () => {
+describe('Contrato de API Open-Meteo', () => {
+    it('API de Geocodificación retorna el esquema esperado para "Santiago"', async () => {
         const response = await fetch('https://geocoding-api.open-meteo.com/v1/search?name=Santiago&count=1&language=es&format=json');
         expect(response.status).toBe(200);
 
         const data = await response.json();
 
-        // Schema Validation
+        // Validación de Esquema
         expect(data).toHaveProperty('results');
         expect(Array.isArray(data.results)).toBe(true);
         expect(data.results.length).toBeGreaterThan(0);
@@ -25,14 +25,14 @@ describe('Open-Meteo API Contract', () => {
         expect(typeof firstResult.longitude).toBe('number');
     });
 
-    it('Forecast API returns expected schema', async () => {
-        // Berlin coordinates
+    it('API de Pronóstico retorna el esquema esperado', async () => {
+        // Coordenadas de Berlín
         const response = await fetch('https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current_weather=true');
         expect(response.status).toBe(200);
 
         const data = await response.json();
 
-        // Schema Validation
+        // Validación de Esquema
         expect(data).toHaveProperty('current_weather');
         const weather = data.current_weather;
         expect(weather).toHaveProperty('temperature');
