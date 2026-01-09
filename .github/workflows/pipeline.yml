@@ -103,10 +103,28 @@ jobs:
           destination_dir: dev
           keep_files: true
 
-  # JOB 5: DEPLOY QA
+  # JOB 5: SMOKE TESTS DEV
+  smoke-test-dev:
+    name: Smoke Tests DEV
+    needs: deploy-dev
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+      - name: Run Smoke Tests DEV
+        run: npm run test:smoke:dev
+        env:
+          TEST_ENV: development
+
+  # JOB 6: DEPLOY QA
   deploy-qa:
     name: Deploy to QA
-    needs: deploy-dev
+    needs: smoke-test-dev
     runs-on: ubuntu-latest
     environment:
       name: qa
@@ -129,10 +147,28 @@ jobs:
           destination_dir: qa
           keep_files: true
 
-  # JOB 6: DEPLOY PROD
+  # JOB 7: SMOKE TESTS QA
+  smoke-test-qa:
+    name: Smoke Tests QA
+    needs: deploy-qa
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+      - name: Run Smoke Tests QA
+        run: npm run test:smoke:qa
+        env:
+          TEST_ENV: qa
+
+  # JOB 8: DEPLOY PROD
   deploy-prod:
     name: Deploy to PROD
-    needs: deploy-qa
+    needs: smoke-test-qa
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
@@ -155,3 +191,21 @@ jobs:
           publish_dir: ./dist
           destination_dir: ./
           keep_files: true
+
+  # JOB 9: SMOKE TESTS PROD
+  smoke-test-prod:
+    name: Smoke Tests PROD
+    needs: deploy-prod
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+      - name: Run Smoke Tests PROD
+        run: npm run test:smoke:prod
+        env:
+          TEST_ENV: production
