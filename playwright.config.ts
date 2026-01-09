@@ -10,8 +10,8 @@ export default defineConfig({
     use: {
         baseURL: 'http://localhost:5173',
         trace: 'on-first-retry',
-        video: 'retain-on-failure',  // Graba video solo si falla
-        screenshot: 'only-on-failure',  // Screenshot solo si falla
+        video: process.env.CI ? 'on' : 'retain-on-failure',  // Siempre en CI, solo fallos en local
+        screenshot: process.env.CI ? 'on' : 'only-on-failure',  // Siempre en CI, solo fallos en local
     },
     webServer: {
         command: 'npm run dev',
