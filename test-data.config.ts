@@ -24,12 +24,12 @@ export const TEST_DATA: Record<string, TestData> = {
         }
     },
     qa: {
-        cities: ['Madrid', 'Bogotá', 'Ciudad de México'],
-        expectedCountries: ['España', 'Colombia', 'México'],
+        cities: ['Santiago de Chile', 'Bogotá', 'Ciudad de México'],
+        expectedCountries: ['Chile', 'Colombia', 'México'],
         coordinates: {
-            lat: 40.41,
-            lon: -3.70,
-            city: 'Madrid'
+            lat: -33.45,
+            lon: -70.66,
+            city: 'Santiago de Chile'
         }
     },
     production: {
