@@ -170,12 +170,12 @@ describe('App', () => {
         const user = userEvent.setup();
 
         // Crear una promesa que podemos controlar
-        let resolveCoordinates: any;
-        const coordinatesPromise = new Promise((resolve) => {
+        let resolveCoordinates: ((value: api.Coordinates) => void) | undefined;
+        const coordinatesPromise = new Promise<api.Coordinates>((resolve) => {
             resolveCoordinates = resolve;
         });
 
-        vi.mocked(api.getCoordinates).mockReturnValue(coordinatesPromise as any);
+        vi.mocked(api.getCoordinates).mockReturnValue(coordinatesPromise);
 
         render(<App />);
 
@@ -189,7 +189,7 @@ describe('App', () => {
         expect(button).toBeDisabled();
 
         // Resolver la promesa
-        resolveCoordinates({
+        resolveCoordinates!({
             lat: 40.4168,
             lon: -3.7038,
             name: 'Madrid',

@@ -1,41 +1,30 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import MapView from './MapView';
+import type { ReactNode } from 'react';
+
+interface MockComponentProps {
+    children?: ReactNode;
+    [key: string]: unknown;
+}
 
 // Mock react-leaflet components
-vi.mock('react-leaflet', () => ({
-    MapContainer: ({ children, ...props }: any) => (
-        <div data-testid="map-container" {...props}>{children}</div>
-    ),
-    TileLayer: () => <div data-testid="tile-layer" />,
-    Marker: ({ children }: any) => <div data-testid="marker">{children}</div>,
-    Popup: ({ children }: any) => <div data-testid="popup">{children}</div>,
-    useMap: () => ({
-        invalidateSize: vi.fn(),
-        flyTo: vi.fn()
-    }),
-    LayersControl: ({ children }: any) => <div data-testid="layers-control">{children}</div>,
-}));
-
-// Add BaseLayer to LayersControl mock
 vi.mock('react-leaflet', async () => {
-    const actual = await vi.importActual('react-leaflet');
     return {
-        ...actual,
-        MapContainer: ({ children, ...props }: any) => (
+        MapContainer: ({ children, ...props }: MockComponentProps) => (
             <div data-testid="map-container" {...props}>{children}</div>
         ),
         TileLayer: () => <div data-testid="tile-layer" />,
-        Marker: ({ children }: any) => <div data-testid="marker">{children}</div>,
-        Popup: ({ children }: any) => <div data-testid="popup">{children}</div>,
+        Marker: ({ children }: MockComponentProps) => <div data-testid="marker">{children}</div>,
+        Popup: ({ children }: MockComponentProps) => <div data-testid="popup">{children}</div>,
         useMap: () => ({
             invalidateSize: vi.fn(),
             flyTo: vi.fn()
         }),
         LayersControl: Object.assign(
-            ({ children }: any) => <div data-testid="layers-control">{children}</div>,
+            ({ children }: MockComponentProps) => <div data-testid="layers-control">{children}</div>,
             {
-                BaseLayer: ({ children }: any) => <div data-testid="base-layer">{children}</div>
+                BaseLayer: ({ children }: MockComponentProps) => <div data-testid="base-layer">{children}</div>
             }
         ),
     };
