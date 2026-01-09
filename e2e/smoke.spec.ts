@@ -7,6 +7,11 @@ const baseUrl = process.env.BASE_URL || 'http://localhost:5173';
 
 test.describe('Smoke Tests - Flujo de Búsqueda', () => {
     test(`Búsqueda de ${testData.coordinates.city}`, async ({ page }) => {
+        // Capturar logs del navegador para debugging en CI/CD
+        page.on('console', msg => {
+            console.log(`[BROWSER ${msg.type()}] ${msg.text()}`);
+        });
+
         // Inicializar monitor de APIs
         const apiMonitor = new ApiMonitor(page);
 
@@ -28,11 +33,12 @@ test.describe('Smoke Tests - Flujo de Búsqueda', () => {
         const weatherCard = page.getByTestId('weather-card');
 
         try {
-            // Timeout generoso para CI/CD (las APIs pueden tardar)
-            await expect(weatherCard).toBeVisible({ timeout: 30000 });
+            // timeout de expect (25s) menor que el timeout global (30s)
+            // para permitir captura de screenshot en el catch
+            await expect(weatherCard).toBeVisible({ timeout: 25000 });
         } catch (error) {
             // Si falla, capturar información para debugging
-            console.error('❌ Weather card no apareció después de 30s');
+            console.error('❌ Weather card no apareció después de 25s');
 
             // Verificar si hay mensaje de error en la UI
             const errorMessage = await page.locator('.error-message').textContent().catch(() => null);

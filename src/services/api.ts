@@ -16,9 +16,16 @@ export const getCoordinates = async (cityName: string): Promise<Coordinates | nu
     const response = await fetch(
       `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityName)}&count=1&language=es&format=json`
     );
+
+    if (!response.ok) {
+      console.error(`Geocoding API error: ${response.status} ${response.statusText}`);
+      return null;
+    }
+
     const data = await response.json();
-    
+
     if (!data.results || data.results.length === 0) {
+      console.warn(`No results found for city: ${cityName}`);
       return null;
     }
 
@@ -52,7 +59,7 @@ export const getWeather = async (lat: number, lon: number): Promise<WeatherData 
       weatherCode: data.current_weather.weathercode,
     };
   } catch (error) {
-    console.error("Error fetching weather:", error);
+    console.error(`Error fetching weather for ${lat},${lon}:`, error);
     return null;
   }
 };
