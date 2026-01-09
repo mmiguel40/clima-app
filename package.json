@@ -11,6 +11,10 @@
     "test": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:report": "playwright show-report",
     "test:smoke:dev": "cross-env TEST_ENV=development BASE_URL=https://mmiguel40.github.io/clima-app/dev/ playwright test e2e/smoke.spec.ts",
     "test:smoke:qa": "cross-env TEST_ENV=qa BASE_URL=https://mmiguel40.github.io/clima-app/qa/ playwright test e2e/smoke.spec.ts",
     "test:smoke:prod": "cross-env TEST_ENV=production BASE_URL=https://mmiguel40.github.io/clima-app/ playwright test e2e/smoke.spec.ts"

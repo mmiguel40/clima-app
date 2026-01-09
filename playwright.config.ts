@@ -10,6 +10,8 @@ export default defineConfig({
     use: {
         baseURL: 'http://localhost:5173',
         trace: 'on-first-retry',
+        video: 'retain-on-failure',  // Graba video solo si falla
+        screenshot: 'only-on-failure',  // Screenshot solo si falla
     },
     webServer: {
         command: 'npm run dev',
