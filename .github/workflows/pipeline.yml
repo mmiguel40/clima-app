@@ -57,10 +57,28 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-  # JOB 3: DEPLOY DEV
+  # JOB 3: E2E TESTS
+  e2e-tests:
+    name: E2E Tests
+    needs: quality-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install Deps
+        run: npm ci
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Run E2E Tests
+        run: npm run test:e2e
+
+  # JOB 4: DEPLOY DEV
   deploy-dev:
     name: Deploy to DEV
-    needs: quality-check
+    needs: [quality-check, e2e-tests]
     runs-on: ubuntu-latest
     environment:
       name: development
@@ -85,7 +103,7 @@ jobs:
           destination_dir: dev
           keep_files: true
 
-  # JOB 4: DEPLOY QA
+  # JOB 5: DEPLOY QA
   deploy-qa:
     name: Deploy to QA
     needs: deploy-dev
@@ -111,7 +129,7 @@ jobs:
           destination_dir: qa
           keep_files: true
 
-  # JOB 5: DEPLOY PROD
+  # JOB 6: DEPLOY PROD
   deploy-prod:
     name: Deploy to PROD
     needs: deploy-qa
