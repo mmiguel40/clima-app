@@ -9,7 +9,7 @@ test('Full Search Flow', async ({ page }) => {
 
     // 3. Search for a city
     const searchInput = page.getByPlaceholder('Buscar ciudad (ej: Santiago)');
-    await searchInput.fill('Santiago');
+    await searchInput.fill('Santiago de Chile');
 
     const searchButton = page.getByRole('button', { name: 'Buscar' });
     await searchButton.click();
@@ -33,8 +33,7 @@ test('Full Search Flow', async ({ page }) => {
     await expect(mapView).toBeVisible();
 
     // 5. Verify content
-    // Expect "City, Country" format (e.g., Santiago, Chile) 
-    // Note: The mock API or real API might return "Santiago, Chile" or similar. adjusting expectation.
+    // Expect "Santiago de Chile" or "Santiago, Chile" format
     await expect(weatherCard).toContainText('Santiago');
     await expect(weatherCard).toContainText('Chile');
 
