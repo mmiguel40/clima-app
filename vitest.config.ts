@@ -10,6 +10,12 @@ export default defineConfig({
         exclude: ['node_modules', 'e2e/**/*'],
         coverage: {
             reporter: ['text', 'json', 'html', 'lcov'],
+            thresholds: {
+                statements: 80,
+                branches: 80,
+                functions: 80,
+                lines: 80,
+            },
         },
     },
 });
