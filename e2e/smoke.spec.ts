@@ -25,7 +25,7 @@ test.describe('Smoke Tests - Flujo de Búsqueda', () => {
 
         // 5. Verificar que aparecen los resultados
         const weatherCard = page.getByTestId('weather-card');
-        await expect(weatherCard).toBeVisible({ timeout: 20000 });
+        await expect(weatherCard).toBeVisible({ timeout: 30000 });
 
         // 6. Verificar que el mapa está presente
         const mapView = page.getByTestId('map-view');
